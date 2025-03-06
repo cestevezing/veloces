@@ -1,0 +1,36 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Password.123
+      MYSQL_DATABASE: order_management
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: Password.123
+    ports:
+      - "3306:3306"
+
+  redis-server:
+    image: redis:7.0
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+
+  veloces-back:
+    build:
+      context: .
+    container_name: veloces-back
+    environment:
+      DB_CONNECTION_STRING: root:Password.123@tcp(mysql-db:3306)/order_management?charset=utf8mb4&parseTime=True&loc=Local
+      REDIS_ADDR: redis-server:6379
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-db
+      - redis-server
+
+name: veloces
+networks:
+  default:
+    name: veloces-network

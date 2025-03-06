@@ -1,0 +1,217 @@
+definitions:
+  model.Order:
+    properties:
+      createdAt:
+        type: string
+      customerName:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/model.OrderItem'
+        type: array
+      totalAmount:
+        type: number
+      updatedAt:
+        type: string
+    type: object
+  model.OrderItem:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      orderID:
+        type: integer
+      productID:
+        type: integer
+      quantity:
+        type: integer
+      subtotal:
+        type: number
+      updatedAt:
+        type: string
+    type: object
+  model.Product:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      stock:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  requests.OrderCreate:
+    properties:
+      customer_name:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/requests.OrderItemCreate'
+        type: array
+    type: object
+  requests.OrderItemCreate:
+    properties:
+      product_id:
+        type: integer
+      quantity:
+        type: integer
+    type: object
+  requests.ProductStock:
+    properties:
+      new_stock:
+        type: integer
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /api/orders:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new order with the provided details.
+      parameters:
+      - description: Idempotency Key to prevent duplicate requests
+        in: header
+        name: Idempotency-Key
+        required: true
+        type: string
+      - description: Order creation payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requests.OrderCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Order created successfully
+          schema:
+            $ref: '#/definitions/model.Order'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Create a new order
+      tags:
+      - Orders
+  /api/orders/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an order using its unique ID.
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order retrieved successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Invalid order ID
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get order by ID
+      tags:
+      - Orders
+  /api/products:
+    get:
+      description: Retrieve a list of all products.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products retrieved successfully
+          schema:
+            items:
+              $ref: '#/definitions/model.Product'
+            type: array
+        "404":
+          description: Products not found
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get All Products
+      tags:
+      - Products
+  /api/products/{id}:
+    get:
+      description: Retrieve a single product by its ID.
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product retrieved successfully
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Invalid product ID
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get Product by ID
+      tags:
+      - Products
+  /api/products/{id}/stock:
+    put:
+      consumes:
+      - application/json
+      description: Update the stock quantity of a product.
+      parameters:
+      - description: Idempotency Key to prevent duplicate requests
+        in: header
+        name: Idempotency-Key
+        required: true
+        type: string
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Stock update payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/requests.ProductStock'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product stock updated successfully
+          schema:
+            $ref: '#/definitions/model.Product'
+        "400":
+          description: Invalid request body or product ID
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Update Product Stock
+      tags:
+      - Products
+swagger: "2.0"
