@@ -21,5 +21,4 @@ func (dl *DataLoader) Load() {
 func (dl *DataLoader) purgeData() {
 	dl.DB.Where("1 = 1").Delete(&model.OrderItem{})
 	dl.DB.Where("1 = 1").Delete(&model.Order{})
-	dl.DB.Where("1 = 1").Delete(&model.Product{})
 }

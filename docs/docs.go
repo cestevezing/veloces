@@ -297,12 +297,17 @@ const docTemplate = `{
         },
         "requests.OrderCreate": {
             "type": "object",
+            "required": [
+                "customer_name",
+                "items"
+            ],
             "properties": {
                 "customer_name": {
                     "type": "string"
                 },
                 "items": {
                     "type": "array",
+                    "minItems": 1,
                     "items": {
                         "$ref": "#/definitions/requests.OrderItemCreate"
                     }
@@ -311,6 +316,10 @@ const docTemplate = `{
         },
         "requests.OrderItemCreate": {
             "type": "object",
+            "required": [
+                "product_id",
+                "quantity"
+            ],
             "properties": {
                 "product_id": {
                     "type": "integer"
@@ -322,6 +331,9 @@ const docTemplate = `{
         },
         "requests.ProductStock": {
             "type": "object",
+            "required": [
+                "new_stock"
+            ],
             "properties": {
                 "new_stock": {
                     "type": "integer"

@@ -10,6 +10,7 @@ import (
 	"github.com/cestevezing/veloces/internal/core/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func InitDB() (*gorm.DB, error) {
@@ -34,12 +35,12 @@ func InitDB() (*gorm.DB, error) {
 		return nil, fmt.Errorf("error connecting to database: %v", err)
 	}
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, err
 	}
-
-	log.Println("Connected to MySQL successfully!")
 
 	err = db.AutoMigrate(&model.Product{}, &model.Order{}, &model.OrderItem{})
 	if err != nil {

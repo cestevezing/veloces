@@ -55,7 +55,11 @@ definitions:
       items:
         items:
           $ref: '#/definitions/requests.OrderItemCreate'
+        minItems: 1
         type: array
+    required:
+    - customer_name
+    - items
     type: object
   requests.OrderItemCreate:
     properties:
@@ -63,11 +67,16 @@ definitions:
         type: integer
       quantity:
         type: integer
+    required:
+    - product_id
+    - quantity
     type: object
   requests.ProductStock:
     properties:
       new_stock:
         type: integer
+    required:
+    - new_stock
     type: object
   response.Response:
     properties:

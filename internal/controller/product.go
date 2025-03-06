@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cestevezing/veloces/internal/core/common/utils"
 	"github.com/cestevezing/veloces/internal/core/dto/requests"
 	"github.com/cestevezing/veloces/internal/core/dto/response"
 	"github.com/cestevezing/veloces/internal/core/port/service"
@@ -26,7 +27,7 @@ func NewProductController(service service.IProduct) *ProductController {
 // @Failure 404 {object} response.Response "Products not found"
 // @Router /api/products [get]
 func (ctr *ProductController) GetAll(c *fiber.Ctx) error {
-	products, err := ctr.service.GetAll()
+	products, err := ctr.service.GetAll(c.Context())
 	if err != nil {
 		return response.Error(c, http.StatusNotFound, err.Error())
 	}
@@ -47,7 +48,7 @@ func (ctr *ProductController) GetByID(c *fiber.Ctx) error {
 	if err != nil {
 		return response.Error(c, http.StatusBadRequest, "Invalid product ID")
 	}
-	product, err := ctr.service.GetByID(idInt)
+	product, err := ctr.service.GetByID(c.Context(), idInt)
 	if err != nil {
 		return response.Error(c, http.StatusBadRequest, err.Error())
 	}
@@ -76,7 +77,10 @@ func (ctr *ProductController) UpdateStock(c *fiber.Ctx) error {
 	if err != nil {
 		return response.Error(c, http.StatusBadRequest, "Invalid request body")
 	}
-	result, err := ctr.service.UpdateStock(idInt, productStock)
+	if err := utils.ValidateStruct(productStock); err != nil {
+		return response.Error(c, fiber.StatusBadRequest, "Invalid request body")
+	}
+	result, err := ctr.service.UpdateStock(c.Context(), idInt, productStock)
 	if err != nil {
 		return response.Error(c, http.StatusBadRequest, err.Error())
 	}

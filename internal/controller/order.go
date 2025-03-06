@@ -3,6 +3,7 @@ package controller
 import (
 	"strconv"
 
+	"github.com/cestevezing/veloces/internal/core/common/utils"
 	"github.com/cestevezing/veloces/internal/core/dto/requests"
 	"github.com/cestevezing/veloces/internal/core/dto/response"
 	"github.com/cestevezing/veloces/internal/core/port/service"
@@ -32,7 +33,7 @@ func (ctx *OrderController) GetByID(c *fiber.Ctx) error {
 	if err != nil {
 		return response.Error(c, fiber.StatusBadRequest, "Invalid order ID")
 	}
-	order, err := ctx.service.GetByID(idInt)
+	order, err := ctx.service.GetByID(c.Context(), idInt)
 	if err != nil {
 		return response.Error(c, fiber.StatusBadRequest, err.Error())
 	}
@@ -54,7 +55,10 @@ func (ctx *OrderController) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&order); err != nil {
 		return response.Error(c, fiber.StatusBadRequest, err.Error())
 	}
-	newOrder, err := ctx.service.Create(order)
+	if err := utils.ValidateStruct(order); err != nil {
+		return response.Error(c, fiber.StatusBadRequest, "invalid request body")
+	}
+	newOrder, err := ctx.service.Create(c.Context(), order)
 	if err != nil {
 		return response.Error(c, fiber.StatusBadRequest, err.Error())
 	}

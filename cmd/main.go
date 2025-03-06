@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/cestevezing/veloces/internal/core/common/router"
+	"github.com/cestevezing/veloces/internal/core/common/utils"
 	"github.com/cestevezing/veloces/internal/infra/redis_service"
 	"github.com/cestevezing/veloces/internal/infra/repository"
 	"github.com/gofiber/contrib/swagger"
@@ -20,6 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	utils.InitValidator()
 	redisClient := redis_service.NewRedisClient()
 	app := SetupApp(db, redisClient)
 	port := os.Getenv("PORT")
@@ -27,14 +29,16 @@ func main() {
 }
 
 func SetupApp(database *gorm.DB, redisClient *redis.Client) *fiber.App {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		Prefork: true,
+		AppName: "Api Veloces",
+	})
 	app.Use(cors.New())
 	app.Use(logger.New(logger.Config{
 		Format: "[${ip}]:${port} ${status} - ${method} ${path} \n",
 	}))
-
 	cfg := swagger.Config{
-		BasePath: "",
+		BasePath: "/",
 		FilePath: "../docs/swagger.json",
 		Path:     "/",
 		Title:    "Swagger API Documentation",

@@ -25,7 +25,7 @@ Herramientas utilizadas para contenerizar la aplicación y sus dependencias (MyS
 
 # Características Principales
 1. Idempotencia :
-Implementada mediante Redis para evitar duplicados en la creación de órdenes. Cada solicitud incluye un encabezado Idempotency-Key que se verifica antes de procesar la solicitud.
+ - Implementada mediante Redis para evitar duplicados en la creación de órdenes. Cada solicitud incluye un encabezado Idempotency-Key que se verifica antes de procesar la solicitud.
 2. Arquitectura Hexagonal :
 - Separación clara entre capas:
   - Controladores : Manejan las solicitudes HTTP.
